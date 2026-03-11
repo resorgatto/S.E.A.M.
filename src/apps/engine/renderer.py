@@ -10,7 +10,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-
 # Match template variables: {{variable.path}}
 TEMPLATE_PATTERN = re.compile(r"\{\{\s*([\w.]+)\s*\}\}")
 
