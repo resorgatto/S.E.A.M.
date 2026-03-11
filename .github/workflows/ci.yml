@@ -1,0 +1,122 @@
+# ==========================================
+# PayloadOps — GitHub Actions CI Pipeline
+# ==========================================
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ---------- Lint & Type Check ----------
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check src/
+
+      - name: Format check (ruff)
+        run: ruff format --check src/
+
+      - name: Type check (mypy)
+        run: mypy src/
+        continue-on-error: true
+
+  # ---------- Tests ----------
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: payloadops_test
+          POSTGRES_USER: payloadops
+          POSTGRES_PASSWORD: payloadops_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U payloadops"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      DJANGO_SECRET_KEY: test-secret-key-not-for-production
+      POSTGRES_DB: payloadops_test
+      POSTGRES_USER: payloadops
+      POSTGRES_PASSWORD: payloadops_test
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      CELERY_BROKER_URL: redis://localhost:6379/0
+      CELERY_RESULT_BACKEND: redis://localhost:6379/1
+      ENCRYPTION_KEY: dGVzdC1lbmNyeXB0aW9uLWtleS1mb3ItY2k=
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install ".[dev]"
+
+      - name: Run migrations
+        run: python src/manage.py migrate --noinput
+
+      - name: Run tests
+        run: pytest tests/ -v --cov=src/apps --cov=src/common --cov-report=term-missing --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage.xml
+          fail_ci_on_error: false
+
+  # ---------- Docker Build ----------
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t payloadops:test .
+
+      - name: Verify image
+        run: docker images payloadops:test
