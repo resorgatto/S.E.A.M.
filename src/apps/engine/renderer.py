@@ -7,7 +7,7 @@ Supports nested variable access via dot notation (e.g., {{payload.user.name}}).
 
 from __future__ import annotations
 
-import re  # noqa: I001
+import re
 from typing import Any
 
 
