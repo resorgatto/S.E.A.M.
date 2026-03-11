@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
-import { Activity, LayoutDashboard, Settings, Layers, Bell, User } from 'lucide-react';
+import { Activity, LayoutDashboard, Settings, Layers, Bell, User, LogOut } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ThemeToggle } from '../components/ThemeToggle';
 import styles from './DashboardLayout.module.css';
@@ -15,10 +15,23 @@ const bottomNavItems = [
     { name: 'Settings', path: '/settings', icon: Settings },
 ];
 
+
+
 export function DashboardLayout() {
     const location = useLocation();
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
+
+    const getBreadcrumbTitle = () => {
+        const path = location.pathname;
+        if (path === '/') return 'Dashboard';
+        if (path.startsWith('/workflows/new')) return 'Create Workflow';
+        if (path.startsWith('/workflows/') && path !== '/workflows') return 'Workflow Details';
+        if (path.startsWith('/workflows')) return 'Workflows';
+        if (path.startsWith('/logs')) return 'Execution Logs';
+        if (path.startsWith('/settings')) return 'Settings';
+        return 'Dashboard';
+    };
 
     return (
         <div className={styles.layout}>
@@ -80,27 +93,10 @@ export function DashboardLayout() {
                         })}
                     </ul>
 
-                    <DropdownMenu.Root>
-                        <DropdownMenu.Trigger asChild>
-                            <button className={styles.userSelector}>
-                                <div className={styles.userAvatar}>
-                                    <User size={16} />
-                                </div>
-                                <span className={styles.userName}>{user?.full_name || user?.username || 'User'}</span>
-                            </button>
-                        </DropdownMenu.Trigger>
-                        <DropdownMenu.Content className={styles.dropdownContent} align="end">
-                            <DropdownMenu.Label className={styles.dropdownLabel}>{user?.email}</DropdownMenu.Label>
-                            <DropdownMenu.Separator className={styles.dropdownSeparator} />
-                            <DropdownMenu.Item className={styles.dropdownItem} onClick={() => window.location.href = '/settings'}>
-                                Settings
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Separator className={styles.dropdownSeparator} />
-                            <DropdownMenu.Item className={styles.dropdownItem} onClick={logout}>
-                                Log out
-                            </DropdownMenu.Item>
-                        </DropdownMenu.Content>
-                    </DropdownMenu.Root>
+                    <button className={`${styles.navItemButton} ${styles.logoutButton}`} onClick={logout}>
+                        <LogOut size={18} />
+                        <span>Log out</span>
+                    </button>
                 </div>
             </aside>
 
@@ -110,13 +106,30 @@ export function DashboardLayout() {
                     <div className={styles.breadcrumbs}>
                         <span>Workspace</span>
                         <span className={styles.breadcrumbSeparator}>/</span>
-                        <span className={styles.breadcrumbCurrent}>Dashboard</span>
+                        <span className={styles.breadcrumbCurrent}>{getBreadcrumbTitle()}</span>
                     </div>
                     <div className={styles.topbarActions}>
                         <ThemeToggle />
                         <button className={styles.iconButton}>
                             <Bell size={18} />
                         </button>
+                        <DropdownMenu.Root>
+                            <DropdownMenu.Trigger asChild>
+                                <button className={styles.topbarUserAvatar}>
+                                    <User size={16} />
+                                </button>
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content className={styles.dropdownContent} align="end">
+                                <DropdownMenu.Label className={styles.dropdownLabel}>{user?.full_name || user?.username || user?.email}</DropdownMenu.Label>
+                                <DropdownMenu.Separator className={styles.dropdownSeparator} />
+                                <DropdownMenu.Item className={styles.dropdownItem}>
+                                    My Profile
+                                </DropdownMenu.Item>
+                                <DropdownMenu.Item className={styles.dropdownItem} onClick={logout}>
+                                    Log out
+                                </DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                        </DropdownMenu.Root>
                     </div>
                 </header>
                 <main className={styles.content}>
