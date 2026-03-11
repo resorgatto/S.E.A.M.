@@ -1,0 +1,65 @@
+# ======================
+# PayloadOps .gitignore
+# ======================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+
+# Database
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# mypy
+.mypy_cache/
+
+# pytest
+.pytest_cache/
+
+# ruff
+.ruff_cache/
+
+# Planejamento (internal docs)
+Planejamento/
+
+# Antigravity / AI tooling
+.gemini/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Static files (collected)
+staticfiles/

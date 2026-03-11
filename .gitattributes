@@ -1,0 +1,59 @@
+# ==============================================
+# PayloadOps — .gitattributes
+#
+# Ensures consistent line endings across all OS.
+# Critical for Docker (Linux containers) to work
+# correctly on Windows/macOS/Linux hosts.
+# ==============================================
+
+# Default: auto-detect text files, normalize to LF
+* text=auto eol=lf
+
+# ---- Shell scripts (MUST be LF, or Docker will fail) ----
+*.sh text eol=lf
+entrypoint.sh text eol=lf
+
+# ---- Python source ----
+*.py text eol=lf
+
+# ---- Config files ----
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+*.env text eol=lf
+
+# ---- Docker ----
+Dockerfile text eol=lf
+docker-compose*.yml text eol=lf
+
+# ---- Documentation ----
+*.md text eol=lf
+*.txt text eol=lf
+*.rst text eol=lf
+LICENSE text eol=lf
+
+# ---- Web ----
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+
+# ---- Makefile (tabs are significant) ----
+Makefile text eol=lf
+
+# ---- Binary files (don't touch) ----
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.xlsx binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
