@@ -6,7 +6,7 @@ JWT token management and API key authentication for Django Ninja.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 import jwt
@@ -32,7 +32,7 @@ def create_access_token(user: User) -> tuple[str, int]:
     Returns:
         Tuple of (token_string, expires_in_seconds)
     """
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.now(tz=UTC)
     expires_at = now + JWT_ACCESS_TOKEN_LIFETIME
     payload = {
         "sub": str(user.id),
@@ -47,7 +47,7 @@ def create_access_token(user: User) -> tuple[str, int]:
 
 def create_refresh_token(user: User) -> str:
     """Create a JWT refresh token for the given user."""
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.now(tz=UTC)
     payload = {
         "sub": str(user.id),
         "type": "refresh",

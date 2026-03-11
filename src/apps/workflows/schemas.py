@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 
 from ninja import Schema
-from pydantic import Field
+from pydantic import Field  # noqa: I001
 
 
 # ==========================================

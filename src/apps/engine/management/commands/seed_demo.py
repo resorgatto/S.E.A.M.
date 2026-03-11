@@ -12,8 +12,6 @@ Usage:
 
 from __future__ import annotations
 
-import uuid
-
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -24,8 +22,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options) -> None:
         from apps.accounts.models import User
         from apps.observability.models import ExecutionLog
-        from apps.workspaces.models import Workspace, WorkspaceMembership
         from apps.workflows.models import Action, Trigger, Workflow
+        from apps.workspaces.models import Workspace, WorkspaceMembership
 
         self.stdout.write(self.style.WARNING("🌱 Seeding PayloadOps demo data..."))
 
@@ -132,7 +130,6 @@ class Command(BaseCommand):
 
         # ---- Sample Execution Logs ----
         if not ExecutionLog.objects.filter(workspace=workspace).exists():
-            now = timezone.now()
             sample_logs = [
                 {
                     "workflow": wf1,
@@ -195,5 +192,5 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS("\n🎉 Demo data seeded successfully!"))
         self.stdout.write(self.style.WARNING("\n📝 Demo credentials:"))
-        self.stdout.write(f"   Email: demo@payloadops.dev")
-        self.stdout.write(f"   Password: demo1234")
+        self.stdout.write("   Email: demo@payloadops.dev")
+        self.stdout.write("   Password: demo1234")

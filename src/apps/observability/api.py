@@ -7,8 +7,7 @@ Execution log listing, filtering, metrics, and spreadsheet export.
 from __future__ import annotations
 
 import io
-import os
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from django.db.models import Avg, Count, Q
@@ -193,6 +192,6 @@ def export_logs_xlsx(request: HttpRequest):
         buffer.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
     response["Content-Disposition"] = f'attachment; filename="payloadops_logs_{timestamp}.xlsx"'
     return response

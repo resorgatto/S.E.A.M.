@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 
 from ninja import Schema
-from pydantic import EmailStr, Field
+from pydantic import EmailStr, Field  # noqa: I001
 
 
 # ==========================================

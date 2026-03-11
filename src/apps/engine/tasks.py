@@ -190,7 +190,10 @@ def _execute_single_action(
                     execution_log.status = ExecutionLog.Status.RETRYING
                     execution_log.error_message = error_msg
                     execution_log.save(
-                        update_fields=["attempt_number", "response_status_code", "response_body", "status", "error_message"]
+                        update_fields=[
+                            "attempt_number", "response_status_code",
+                            "response_body", "status", "error_message",
+                        ]
                     )
                     # Exponential backoff: 2, 4, 8 seconds...
                     backoff_time = min(2**attempt, settings.WEBHOOK_RETRY_BACKOFF_MAX)
