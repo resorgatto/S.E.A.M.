@@ -1,0 +1,82 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-surface);
+}
+
+.illustrationPanel {
+    display: none;
+    background-color: var(--bg-base);
+    background-image: url('/bg-logo.png');
+    background-size: cover;
+    background-position: center;
+    border-right: 1px solid var(--border-subtle);
+    padding: var(--space-8);
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.illustrationPanel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.6); /* dark overlay */
+    z-index: 0;
+}
+
+.illustrationPanel > * {
+    z-index: 1;
+}
+
+@media (min-width: 1024px) {
+    .illustrationPanel {
+        display: flex;
+        flex: 1;
+    }
+}
+
+.formPanel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    background-color: var(--bg-surface);
+}
+
+.brandingCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+
+
+.centeredLogo {
+    width: 300px; /* Increased size */
+    max-width: 80%; /* Responsive cap */
+    height: auto;
+    object-fit: contain;
+}
+
+.heroText h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin-bottom: var(--space-2);
+    color: var(--text-primary);
+}
+
+.heroText p {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+}
+
+.themeToggleWrapper {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 10;
+}
