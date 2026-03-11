@@ -1,0 +1,252 @@
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-surface);
+}
+
+.sidebar {
+    width: 250px;
+    background-color: var(--bg-base);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebarHeader {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-4);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.workspaceSelector {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    background: transparent;
+    text-align: left;
+    transition: background-color 0.15s;
+    border: none;
+    outline: none;
+}
+
+.workspaceSelector:hover {
+    background-color: var(--bg-surface);
+}
+
+.workspaceAvatar {
+    width: 24px;
+    height: 24px;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.workspaceInfo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.workspaceName {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.workspacePlan {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.navBlock {
+    flex: 1;
+    padding: var(--space-4);
+    overflow-y: auto;
+}
+
+.navList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.4rem var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+
+.navItem:hover {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+.navItemActive {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.sidebarFooter {
+    padding: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.userSelector {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    cursor: pointer;
+    background: transparent;
+    text-align: left;
+    border: none;
+    outline: none;
+}
+
+.userAvatar {
+    width: 28px;
+    height: 28px;
+    background-color: var(--bg-elevated);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.userName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mainWrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar {
+    height: 56px;
+    background-color: var(--bg-base);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-6);
+}
+
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.breadcrumbCurrent {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.breadcrumbSeparator {
+    color: var(--border-strong);
+}
+
+.topbarActions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.iconButton {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.15s;
+    border: none;
+    outline: none;
+}
+
+.iconButton:hover {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+.content {
+    flex: 1;
+    padding: var(--space-8) var(--space-12);
+    overflow-y: auto;
+}
+
+/* Radix Dropdown Menu Styles */
+.dropdownContent {
+    min-width: 220px;
+    background-color: var(--bg-base);
+    border-radius: var(--radius-md);
+    padding: var(--space-1);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-subtle);
+    z-index: 50;
+    font-family: var(--font-sans);
+}
+
+.dropdownItem {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    padding: 0.4rem var(--space-2);
+    cursor: pointer;
+    outline: none;
+    font-weight: 500;
+}
+
+.dropdownItem[data-highlighted] {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.dropdownLabel {
+    padding: var(--space-2);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.dropdownSeparator {
+    height: 1px;
+    background-color: var(--border-subtle);
+    margin: var(--space-1);
+}
