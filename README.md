@@ -31,6 +31,13 @@
 
 Think of it as a self-hosted, developer-focused alternative to tools like Zapier — but built to demonstrate production-grade backend engineering.
 
+> ### 💡 The Name: S.E.A.M.
+> 
+> **(Synchronized Event & Action Middleware)**
+> 
+> - **Middleware:** Represents a shift from basic CRUD operations to complex system orchestration, showcasing an advanced architectural vision.
+> - **Seam:** Acts as the perfect integration point that synchronizes an event (the trigger) with its corresponding action, seamlessly stitching systems together.
+
 ### Key Features
 
 - 🔗 **Webhook Ingestion** — Unique URLs per workflow, instant 202 Accepted responses
