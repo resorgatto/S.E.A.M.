@@ -3,6 +3,8 @@ import { useAuthStore } from '../store/auth';
 import {
     LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { format, parseISO, subDays } from 'date-fns';
+import { api } from '../lib/api';
 import styles from './Dashboard.module.css';
 
 interface Metrics {
@@ -14,37 +16,47 @@ interface Metrics {
     avg_duration_ms: number;
 }
 
-// Mock chart data for MVP visualization
-const chartData = [
-    { name: 'Mon', executions: 4000, failed: 240 },
-    { name: 'Tue', executions: 3000, failed: 139 },
-    { name: 'Wed', executions: 2000, failed: 980 },
-    { name: 'Thu', executions: 2780, failed: 390 },
-    { name: 'Fri', executions: 1890, failed: 480 },
-    { name: 'Sat', executions: 2390, failed: 380 },
-    { name: 'Sun', executions: 3490, failed: 430 },
-];
+interface TimeSeriesDataPoint {
+    date: string;
+    executions: number;
+    failed: number;
+}
+
+interface TimeSeriesOutput {
+    data: TimeSeriesDataPoint[];
+}
 
 export function Dashboard() {
     const user = useAuthStore((state) => state.user);
+    const activeWorkspaceId = useAuthStore((state) => state.activeWorkspaceId);
 
-    // Example of metrics endpoint query
     const { data: metrics } = useQuery({
-        queryKey: ['metricsSummary'],
+        queryKey: ['metricsSummary', activeWorkspaceId],
         queryFn: async () => {
-            // Return mock initially if backend requires a real workspace ID header
-            // const res = await api.get<Metrics>('/logs/metrics/summary');
-            // return res.data;
-            return {
-                total_executions: 18940,
-                successful: 15890,
-                failed: 3050,
-                pending: 12,
-                success_rate: 83.9,
-                avg_duration_ms: 104,
-            } as Metrics;
+            if (!activeWorkspaceId) return null;
+            const res = await api.get<Metrics>('/logs/metrics/summary');
+            return res.data;
         },
+        enabled: !!activeWorkspaceId,
     });
+
+    const { data: timeSeries = [] } = useQuery({
+        queryKey: ['metricsTimeSeries', activeWorkspaceId],
+        queryFn: async () => {
+            if (!activeWorkspaceId) return [];
+            const res = await api.get<TimeSeriesOutput>('/logs/metrics/timeseries');
+            return res.data.data;
+        },
+        enabled: !!activeWorkspaceId,
+    });
+
+    const fallbackTimeSeries = Array.from({ length: 7 }).map((_, i) => ({
+        date: subDays(new Date(), 6 - i).toISOString(),
+        executions: 0,
+        failed: 0,
+    }));
+
+    const chartData = timeSeries.length > 0 ? timeSeries : fallbackTimeSeries;
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -66,19 +78,19 @@ export function Dashboard() {
             <div className={styles.metricsGrid}>
                 <div className={styles.metricCard}>
                     <span className={styles.cardLabel}>Total Executions</span>
-                    <div className={styles.cardValue}>{metrics?.total_executions.toLocaleString()}</div>
+                    <div className={styles.cardValue}>{metrics?.total_executions?.toLocaleString() ?? 0}</div>
                 </div>
                 <div className={styles.metricCard}>
                     <span className={styles.cardLabel}>Success Rate</span>
-                    <div className={styles.cardValue}>{metrics?.success_rate}%</div>
+                    <div className={styles.cardValue}>{metrics?.success_rate ?? 0}%</div>
                 </div>
                 <div className={styles.metricCard}>
                     <span className={styles.cardLabel}>Avg Duration</span>
-                    <div className={styles.cardValue}>{metrics?.avg_duration_ms} ms</div>
+                    <div className={styles.cardValue}>{metrics?.avg_duration_ms ?? 0} ms</div>
                 </div>
                 <div className={styles.metricCard}>
                     <span className={styles.cardLabel}>Pending Events</span>
-                    <div className={styles.cardValue}>{metrics?.pending}</div>
+                    <div className={styles.cardValue}>{metrics?.pending ?? 0}</div>
                 </div>
             </div>
 
@@ -96,9 +108,17 @@ export function Dashboard() {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} dy={10} />
+                                <XAxis 
+                                    dataKey="date" 
+                                    tickFormatter={(val) => format(parseISO(val), 'EEE')} 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
+                                    dy={10} 
+                                />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
                                 <Tooltip
+                                    labelFormatter={(label) => format(parseISO(label as string), 'MMM d, yyyy')}
                                     contentStyle={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', borderRadius: '8px' }}
                                     itemStyle={{ color: 'var(--text-primary)' }}
                                 />
@@ -114,9 +134,17 @@ export function Dashboard() {
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} dy={10} />
+                                <XAxis 
+                                    dataKey="date" 
+                                    tickFormatter={(val) => format(parseISO(val), 'EEE')} 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
+                                    dy={10} 
+                                />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
                                 <Tooltip
+                                    labelFormatter={(label) => format(parseISO(label as string), 'MMM d, yyyy')}
                                     contentStyle={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', borderRadius: '8px' }}
                                     itemStyle={{ color: 'var(--error)' }}
                                 />

@@ -66,12 +66,12 @@
     font-weight: 600;
     letter-spacing: -0.025em;
     margin-bottom: var(--space-2);
-    color: var(--text-primary);
+    color: #ffffff;
 }
 
 .heroText p {
     font-size: 1.125rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .themeToggleWrapper {

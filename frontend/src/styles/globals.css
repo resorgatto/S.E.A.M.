@@ -3,19 +3,23 @@
 :root {
   /* Colors - Light Theme default */
   --bg-base: #ffffff;
-  --bg-surface: #f4f4f5;
-  --bg-elevated: #e4e4e7;
+  --bg-surface: #f9f9fb;
+  --bg-elevated: #f0f0f3;
+  --bg-hover: #eef1f5;
   
-  --text-primary: #09090b;
-  --text-secondary: #52525b;
-  --text-muted: #a1a1aa;
+  --text-primary: #121217;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
   
-  --border-subtle: #e4e4e7;
-  --border-strong: #d4d4d8;
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e0;
+  --border-color: #e2e8f0;
   
   --primary: #4f46e5;
   --primary-hover: #4338ca;
   --primary-foreground: #ffffff;
+  --accent-primary: #4f46e5;
+  --accent-hover: #4338ca;
 
   --success: #10b981;
   --error: #ef4444;
@@ -48,23 +52,27 @@
 }
 
 [data-theme='dark'] {
-  --bg-base: #060b13; /* Deep navy/abyss blue */
-  --bg-surface: #0a1120; /* Slightly lighter blue surface */
-  --bg-elevated: #0f1c30; /* Elevated interactive blue surface */
+  --bg-base: #0a0b10;
+  --bg-surface: #13141c;
+  --bg-elevated: #1e1f29;
+  --bg-hover: #222430;
   
-  --text-primary: #f0f4f8; /* Soft blue-white */
-  --text-secondary: #94a3b8; /* Slate blue-gray */
-  --text-muted: #475569; /* Darker slate */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
   
-  --border-subtle: #1e293b; /* Subtle blueish border */
-  --border-strong: #334155; /* Stronger blueish border */
+  --border-subtle: #2d2f3d;
+  --border-strong: #3f4254;
+  --border-color: #2d2f3d;
   
-  --primary: #4f46e5;
-  --primary-hover: #6366f1;
+  --accent-primary: #6366f1;
+  --accent-hover: #818cf8;
+  --primary: #6366f1;
+  --primary-hover: #818cf8;
   
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.8);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.8), 0 2px 4px -1px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.8), 0 4px 6px -2px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.9);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.9), 0 2px 4px -1px rgba(0, 0, 0, 0.8);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 1), 0 4px 6px -2px rgba(0, 0, 0, 0.9);
 }
 
 *, *::before, *::after {

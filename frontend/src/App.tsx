@@ -14,6 +14,7 @@ import { CreateWorkflow } from './pages/CreateWorkflow';
 import { WorkflowDetail } from './pages/WorkflowDetail';
 import { ExecutionLogs } from './pages/ExecutionLogs';
 import { Settings } from './pages/Settings';
+import { Profile } from './pages/Profile';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -45,6 +46,7 @@ function App() {
           <Route path="/workflows/:id" element={<WorkflowDetail />} />
           <Route path="/logs" element={<ExecutionLogs />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         {/* Fallback */}

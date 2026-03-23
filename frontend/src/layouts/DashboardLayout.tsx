@@ -1,8 +1,10 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 import { Activity, LayoutDashboard, Settings, Layers, Bell, User, LogOut } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { api } from '../lib/api';
 import styles from './DashboardLayout.module.css';
 
 const navItems = [
@@ -21,6 +23,22 @@ export function DashboardLayout() {
     const location = useLocation();
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
+    const activeWorkspaceId = useAuthStore((state) => state.activeWorkspaceId);
+    const setActiveWorkspace = useAuthStore((state) => state.setActiveWorkspace);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user && !activeWorkspaceId) {
+            api.get('/workspaces/').then(async res => {
+                if (res.data && res.data.length > 0) {
+                    setActiveWorkspace(res.data[0].id);
+                } else {
+                    const newWs = await api.post('/workspaces/', { name: 'Personal Workspace', description: 'Auto-generated workspace' });
+                    setActiveWorkspace(newWs.data.id);
+                }
+            }).catch(console.error);
+        }
+    }, [user, activeWorkspaceId, setActiveWorkspace]);
 
     const getBreadcrumbTitle = () => {
         const path = location.pathname;
@@ -30,6 +48,7 @@ export function DashboardLayout() {
         if (path.startsWith('/workflows')) return 'Workflows';
         if (path.startsWith('/logs')) return 'Execution Logs';
         if (path.startsWith('/settings')) return 'Settings';
+        if (path.startsWith('/profile')) return 'My Profile';
         return 'Dashboard';
     };
 
@@ -122,7 +141,7 @@ export function DashboardLayout() {
                             <DropdownMenu.Content className={styles.dropdownContent} align="end">
                                 <DropdownMenu.Label className={styles.dropdownLabel}>{user?.full_name || user?.username || user?.email}</DropdownMenu.Label>
                                 <DropdownMenu.Separator className={styles.dropdownSeparator} />
-                                <DropdownMenu.Item className={styles.dropdownItem}>
+                            <DropdownMenu.Item className={styles.dropdownItem} onClick={() => navigate('/profile')}>
                                     My Profile
                                 </DropdownMenu.Item>
                                 <DropdownMenu.Item className={styles.dropdownItem} onClick={logout}>
