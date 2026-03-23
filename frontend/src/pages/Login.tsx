@@ -24,18 +24,27 @@ export function Login() {
             const res = await api.post('/auth/login', { email, password });
             const { access_token } = res.data;
 
-            // Save token temporarily to fetch user profile
-            localStorage.setItem('access_token', access_token);
-
-            // 2. Fetch user profile
-            const userRes = await api.get('/auth/me');
+            // 2. Fetch user profile (pass token explicitly since it's not in store yet)
+            const userRes = await api.get('/auth/me', {
+                headers: { Authorization: `Bearer ${access_token}` }
+            });
 
             // 3. Save to global store
             setAuth(userRes.data, access_token);
+
+            // 4. Fetch workspaces to set the active one
+            // Token is now in store, so interceptor will attach it
+            const wsRes = await api.get('/workspaces/');
+            if (wsRes.data && wsRes.data.length > 0) {
+                useAuthStore.getState().setActiveWorkspace(wsRes.data[0].id);
+            } else {
+                const newWs = await api.post('/workspaces/', { name: 'Personal Workspace', description: 'Auto-generated workspace' });
+                useAuthStore.getState().setActiveWorkspace(newWs.data.id);
+            }
+
             navigate('/');
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Invalid email or password.');
-            localStorage.removeItem('access_token');
         } finally {
             setLoading(false);
         }

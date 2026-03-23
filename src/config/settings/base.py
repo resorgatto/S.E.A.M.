@@ -64,7 +64,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "common.middleware.WorkspaceMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -135,6 +134,13 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # ==============================================================================
+# MEDIA FILES
+# ==============================================================================
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# ==============================================================================
 # DEFAULT PRIMARY KEY
 # ==============================================================================
 
@@ -165,6 +171,19 @@ CORS_ALLOWED_ORIGINS: list[str] = config(
     default="http://localhost:3000,http://127.0.0.1:3000",
     cast=Csv(),
 )
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "x-workspace-id",
+]
 
 # ==============================================================================
 # ENCRYPTION

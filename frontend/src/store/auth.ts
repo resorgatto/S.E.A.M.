@@ -6,6 +6,8 @@ interface User {
     email: string;
     username: string;
     full_name: string;
+    avatar: string | null;
+    created_at?: string;
 }
 
 interface AuthState {
@@ -15,6 +17,7 @@ interface AuthState {
     activeWorkspaceId: string | null;
     setAuth: (user: User, token: string) => void;
     setActiveWorkspace: (id: string) => void;
+    updateUser: (user: Partial<User>) => void;
     logout: () => void;
 }
 
@@ -28,6 +31,10 @@ export const useAuthStore = create<AuthState>()(
 
             setAuth: (user, token) => set({ user, token, isAuthenticated: true }),
             setActiveWorkspace: (id) => set({ activeWorkspaceId: id }),
+            updateUser: (userData) =>
+                set((state) => ({
+                    user: state.user ? { ...state.user, ...userData } : null,
+                })),
             logout: () => set({ user: null, token: null, isAuthenticated: false, activeWorkspaceId: null }),
         }),
         {
@@ -35,3 +42,4 @@ export const useAuthStore = create<AuthState>()(
         }
     )
 );
+

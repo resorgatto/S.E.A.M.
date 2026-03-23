@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from '../store/auth';
 
 // Base API instance attached to the Django backend
 export const api = axios.create({
@@ -8,11 +9,15 @@ export const api = axios.create({
     },
 });
 
-// Interceptor to inject JWT token
+// Interceptor to inject JWT token and Workspace ID
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('access_token');
+    const { token, activeWorkspaceId } = useAuthStore.getState();
+    
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (activeWorkspaceId && config.headers) {
+        config.headers['X-Workspace-ID'] = activeWorkspaceId;
     }
     return config;
 });
@@ -23,8 +28,8 @@ api.interceptors.response.use(
     async (error) => {
         // Optionally add refresh token logic here
         if (error.response?.status === 401) {
-            // localStorage.removeItem('access_token');
-            // window.location.href = '/login';
+            useAuthStore.getState().logout();
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }

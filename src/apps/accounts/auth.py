@@ -71,6 +71,23 @@ class JWTAuth(HttpBearer):
             if payload.get("type") != "access":
                 return None
             user = User.objects.filter(id=payload["sub"], is_active=True).first()
+            if not user:
+                return None
+            
+            workspace_id = request.headers.get("X-Workspace-ID")
+            if workspace_id:
+                try:
+                    from apps.workspaces.models import Workspace
+                    workspace = Workspace.objects.filter(
+                        id=workspace_id,
+                        memberships__user=user,
+                        is_active=True,
+                    ).first()
+                    if workspace:
+                        request.workspace = workspace  # type: ignore[attr-defined]
+                except (ValueError, TypeError):
+                    pass
+            
             return user
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
             return None

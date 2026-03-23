@@ -6,11 +6,14 @@ Authentication (register, login, refresh) and API key management.
 
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 import jwt
 from django.contrib.auth import authenticate
-from ninja import Router
+from django.contrib.auth.hashers import check_password
+from ninja import File, Router
+from ninja.files import UploadedFile
 
 from apps.accounts.auth import (
     JWTAuth,
@@ -26,6 +29,8 @@ from apps.accounts.schemas import (
     APIKeyOutput,
     LoginInput,
     MessageOutput,
+    PasswordChangeInput,
+    ProfileUpdateInput,
     RefreshInput,
     RegisterInput,
     TokenOutput,
@@ -46,14 +51,15 @@ router = Router()
 @router.post("/register", response={201: UserOutput, 400: MessageOutput})
 def register(request: HttpRequest, payload: RegisterInput):
     """Register a new user account."""
-    if User.objects.filter(email=payload.email).exists():
+    email = payload.email.lower().strip()
+    if User.objects.filter(email=email).exists():
         return 400, {"detail": "A user with this email already exists."}
 
     if User.objects.filter(username=payload.username).exists():
         return 400, {"detail": "A user with this username already exists."}
 
     user = User.objects.create_user(
-        email=payload.email,
+        email=email,
         username=payload.username,
         password=payload.password,
         full_name=payload.full_name,
@@ -64,7 +70,8 @@ def register(request: HttpRequest, payload: RegisterInput):
 @router.post("/login", response={200: TokenOutput, 401: MessageOutput})
 def login(request: HttpRequest, payload: LoginInput):
     """Login and receive JWT access and refresh tokens."""
-    user = authenticate(request, username=payload.email, password=payload.password)
+    email = payload.email.lower().strip()
+    user = authenticate(request, username=email, password=payload.password)
     if user is None:
         return 401, {"detail": "Invalid email or password."}
 
@@ -108,6 +115,93 @@ def refresh(request: HttpRequest, payload: RefreshInput):
 def me(request: HttpRequest):
     """Get the current authenticated user's profile."""
     return request.auth
+
+
+# ==========================================
+# Profile Management
+# ==========================================
+
+
+@router.put("/me", auth=JWTAuth(), response={200: UserOutput, 400: MessageOutput})
+def update_profile(request: HttpRequest, payload: ProfileUpdateInput):
+    """Update the current user's profile information."""
+    user: User = request.auth
+    update_fields = []
+
+    if payload.full_name is not None:
+        user.full_name = payload.full_name
+        update_fields.append("full_name")
+
+    if payload.username is not None:
+        if User.objects.filter(username=payload.username).exclude(id=user.id).exists():
+            return 400, {"detail": "A user with this username already exists."}
+        user.username = payload.username
+        update_fields.append("username")
+
+    if payload.email is not None:
+        new_email = payload.email.lower().strip()
+        if User.objects.filter(email=new_email).exclude(id=user.id).exists():
+            return 400, {"detail": "A user with this email already exists."}
+        user.email = new_email
+        update_fields.append("email")
+
+    if update_fields:
+        user.save(update_fields=update_fields)
+
+    return 200, user
+
+
+@router.put("/me/password", auth=JWTAuth(), response={200: MessageOutput, 400: MessageOutput})
+def change_password(request: HttpRequest, payload: PasswordChangeInput):
+    """Change the current user's password."""
+    user: User = request.auth
+
+    if not check_password(payload.current_password, user.password):
+        return 400, {"detail": "Current password is incorrect."}
+
+    user.set_password(payload.new_password)
+    user.save(update_fields=["password"])
+    return 200, {"detail": "Password updated successfully."}
+
+
+@router.post("/me/avatar", auth=JWTAuth(), response={200: UserOutput, 400: MessageOutput})
+def upload_avatar(request: HttpRequest, file: UploadedFile = File(...)):
+    """Upload or replace the current user's avatar."""
+    user: User = request.auth
+
+    # Validate file type
+    allowed_types = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    if file.content_type not in allowed_types:
+        return 400, {"detail": "Invalid file type. Allowed: JPEG, PNG, WebP, GIF."}
+
+    # Validate file size (max 5MB)
+    if file.size and file.size > 5 * 1024 * 1024:
+        return 400, {"detail": "File too large. Maximum size is 5MB."}
+
+    # Delete old avatar file if exists
+    if user.avatar:
+        old_path = user.avatar.path
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
+    user.avatar = file
+    user.save(update_fields=["avatar"])
+    return 200, user
+
+
+@router.delete("/me/avatar", auth=JWTAuth(), response={200: MessageOutput})
+def delete_avatar(request: HttpRequest):
+    """Remove the current user's avatar."""
+    user: User = request.auth
+
+    if user.avatar:
+        old_path = user.avatar.path
+        if os.path.exists(old_path):
+            os.remove(old_path)
+        user.avatar = None
+        user.save(update_fields=["avatar"])
+
+    return 200, {"detail": "Avatar removed successfully."}
 
 
 # ==========================================

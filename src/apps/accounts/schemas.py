@@ -55,8 +55,36 @@ class UserOutput(Schema):
     email: str
     username: str
     full_name: str
+    avatar: str | None = None
     is_verified: bool
     created_at: datetime
+
+    @staticmethod
+    def resolve_avatar(obj) -> str | None:
+        """Return the full URL for the avatar if it exists."""
+        if obj.avatar and hasattr(obj.avatar, "url"):
+            return obj.avatar.url
+        return None
+
+
+# ==========================================
+# Profile Schemas
+# ==========================================
+
+
+class ProfileUpdateInput(Schema):
+    """Input schema for updating user profile info."""
+
+    full_name: str | None = Field(default=None, max_length=255)
+    username: str | None = Field(default=None, min_length=3, max_length=150)
+    email: EmailStr | None = None
+
+
+class PasswordChangeInput(Schema):
+    """Input schema for changing password."""
+
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=128)
 
 
 # ==========================================
