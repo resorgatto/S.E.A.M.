@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, LayoutGrid, List, Search, MoreHorizontal, Activity, ArrowRight } from 'lucide-react';
+import { api } from '../lib/api';
 import styles from './Workflows.module.css';
-
 interface Workflow {
     id: string;
     name: string;
@@ -20,12 +20,8 @@ export function Workflows() {
     const { data: workflows = [], isLoading } = useQuery<Workflow[]>({
         queryKey: ['workflows'],
         queryFn: async () => {
-            // Return mock array until real workspace headers are cleanly hooked globally
-            return [
-                { id: '1', name: 'Stripe to Slack', description: 'Notifies#general when a new subscription is created', status: 'active', created_at: new Date().toISOString() },
-                { id: '2', name: 'Jira to Linear Sync', description: 'Creates Linear issues from Jira bug tickets', status: 'paused', created_at: new Date().toISOString() },
-                { id: '3', name: 'Form Submit to HubSpot', description: 'Syncs contact leads', status: 'active', created_at: new Date().toISOString() },
-            ];
+            const res = await api.get('/workflows/');
+            return res.data;
         },
     });
 

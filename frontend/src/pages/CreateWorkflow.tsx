@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
+import { api } from '../lib/api';
 import styles from './CreateWorkflow.module.css';
-
 export function CreateWorkflow() {
     const navigate = useNavigate();
     const [name, setName] = useState('');
@@ -11,15 +11,11 @@ export function CreateWorkflow() {
     const [error, setError] = useState('');
 
     const createMutation = useMutation({
-        mutationFn: async (_data: { name: string; description: string }) => {
-            // Mocking the API post to create a workflow for now
-            // return await api.post('/workflows/', data);
-            return new Promise((resolve) => setTimeout(() => resolve({ data: { id: '123' } }), 1000));
+        mutationFn: async (data: { name: string; description: string }) => {
+            return await api.post('/workflows/', data);
         },
-        onSuccess: (_res) => {
-            // In a real flow, redirect to the newly created workflow detail page
-            // navigate(`/workflows/${res.data.id}`);
-            navigate('/workflows');
+        onSuccess: (res) => {
+            navigate(`/workflows/${res.data.id}`);
         },
         onError: (err: any) => {
             setError(err.response?.data?.detail || 'Failed to create workflow.');

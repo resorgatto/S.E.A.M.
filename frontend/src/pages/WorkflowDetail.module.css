@@ -116,7 +116,8 @@
 }
 
 .secondaryButton {
-    background-color: var(--bg-elevated);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
     color: var(--text-primary);
     padding: 0.5rem 1rem;
     border-radius: var(--radius-md);
@@ -126,11 +127,12 @@
     align-items: center;
     gap: var(--space-2);
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
 }
 
 .secondaryButton:hover {
-    background-color: var(--bg-surface);
+    background-color: var(--bg-hover);
+    border-color: var(--border-strong);
 }
 
 /* Pipeline Layout */
@@ -186,13 +188,13 @@
     display: flex;
     align-items: center;
     padding: var(--space-4);
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: var(--bg-surface);
     border-bottom: 1px solid var(--border-subtle);
     gap: var(--space-3);
 }
 
-[data-theme='dark'] .nodeHeader {
-    background-color: rgba(255, 255, 255, 0.02);
+:global([data-theme='dark']) .nodeHeader {
+    background-color: var(--bg-elevated);
 }
 
 .nodeIconWrap {
@@ -255,12 +257,12 @@
 }
 
 .nodeSettingsBtn:hover {
-    background-color: var(--bg-elevated);
+    background-color: var(--bg-hover);
     color: var(--text-primary);
 }
 
 .nodeDeleteBtn:hover {
-    background-color: rgba(239, 68, 68, 0.1);
+    background-color: rgba(239, 68, 68, 0.15);
     color: var(--error);
 }
 
@@ -300,7 +302,7 @@
 }
 
 .copyBtn {
-    background-color: var(--bg-elevated);
+    background-color: var(--bg-surface);
     border: none;
     border-left: 1px solid var(--border-strong);
     padding: 0 1rem;
@@ -311,14 +313,14 @@
 }
 
 .copyBtn:hover {
-    background-color: var(--border-subtle);
+    background-color: var(--bg-hover);
 }
 
 .addNodeBtn {
     margin-top: -10px;
     /* Overlap the connection line */
-    background-color: var(--bg-base);
-    border: 1px dashed var(--border-strong);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-strong);
     color: var(--text-primary);
     padding: 0.75rem 1.5rem;
     border-radius: var(--radius-full);
@@ -330,10 +332,12 @@
     cursor: pointer;
     transition: all 0.2s;
     z-index: 2;
+    box-shadow: var(--shadow-sm);
 }
 
 .addNodeBtn:hover {
     border-color: var(--primary);
     color: var(--primary);
-    background-color: rgba(79, 70, 229, 0.05);
+    background-color: var(--bg-hover);
+    transform: scale(1.02);
 }
