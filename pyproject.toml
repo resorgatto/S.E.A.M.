@@ -43,6 +43,9 @@ dependencies = [
     # Spreadsheet export
     "openpyxl>=3.1,<4.0",
 
+    # Image processing
+    "pillow>=10.0,<11.0",
+
     # Utilities
     "python-decouple>=3.8,<4.0",
     "django-extensions>=3.2,<4.0",

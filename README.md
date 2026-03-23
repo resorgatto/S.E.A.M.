@@ -4,6 +4,9 @@
     <strong>A multi-tenant SaaS webhook integration hub for event-driven automation</strong>
   </p>
   <p align="center">
+    <strong>🇺🇸 English</strong> • <a href="README.pt-br.md">🇧🇷 Português</a>
+  </p>
+  <p align="center">
     <a href="#-quick-start">Quick Start</a> •
     <a href="#-architecture">Architecture</a> •
     <a href="#-api-docs">API Docs</a> •

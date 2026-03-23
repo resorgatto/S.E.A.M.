@@ -7,10 +7,11 @@ Execution log listing, filtering, metrics, and spreadsheet export.
 from __future__ import annotations
 
 import io
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 from django.db.models import Avg, Count, Q
+from django.db.models.functions import TruncDate
 from django.http import HttpResponse
 from ninja import Query, Router
 
@@ -21,6 +22,7 @@ from apps.observability.schemas import (
     ExecutionLogFilterInput,
     ExecutionLogOutput,
     MetricsOutput,
+    TimeSeriesOutput,
 )
 
 if TYPE_CHECKING:
@@ -115,6 +117,50 @@ def get_metrics(request: HttpRequest):
         success_rate=round(success_rate, 2),
         avg_duration_ms=round(stats["avg_duration"], 2) if stats["avg_duration"] else None,
     )
+
+
+@router.get("/metrics/timeseries", auth=auth, response=TimeSeriesOutput)
+def get_metrics_timeseries(request: HttpRequest, days: int = Query(6, ge=1, le=30)):
+    """Get time-series execution metrics aggregated by date (default: last 7 days)."""
+    workspace = getattr(request, "workspace", None)
+    if workspace is None:
+        return TimeSeriesOutput(data=[])
+
+    # If days is 6, it means today + 6 days ago = 7 days total
+    start_date = datetime.now(tz=UTC) - timedelta(days=days)
+
+    qs = ExecutionLog.objects.for_workspace(workspace).filter(created_at__gte=start_date)
+
+    daily_stats = (
+        qs.annotate(date=TruncDate("created_at"))
+        .values("date")
+        .annotate(
+            executions=Count("id"),
+            failed=Count("id", filter=Q(status=ExecutionLog.Status.FAILED)),
+        )
+        .order_by("date")
+    )
+
+    data_dict = {}
+    for stat in daily_stats:
+        date_str = stat["date"].isoformat()
+        data_dict[date_str] = {
+            "date": date_str,
+            "executions": stat["executions"],
+            "failed": stat["failed"],
+        }
+    
+    # Fill in all days to ensure the chart is continuous
+    result = []
+    for i in range(days, -1, -1):
+        d = (datetime.now(tz=UTC) - timedelta(days=i)).date()
+        d_str = d.isoformat()
+        if d_str in data_dict:
+            result.append(data_dict[d_str])
+        else:
+            result.append({"date": d_str, "executions": 0, "failed": 0})
+
+    return TimeSeriesOutput(data=result)
 
 
 # ==========================================

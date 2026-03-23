@@ -63,3 +63,17 @@ class ExportOutput(Schema):
 
     detail: str
     download_url: str
+
+
+class TimeSeriesDataPoint(Schema):
+    """Daily metrics data point."""
+
+    date: str
+    executions: int
+    failed: int
+
+
+class TimeSeriesOutput(Schema):
+    """List of time-series data points."""
+
+    data: list[TimeSeriesDataPoint]
