@@ -6,6 +6,7 @@ JWT token management and API key authentication for Django Ninja.
 
 from __future__ import annotations
 
+import logging
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
@@ -17,6 +18,8 @@ from apps.accounts.models import APIKey, User
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
+
+logger = logging.getLogger(__name__)
 
 # JWT Configuration
 JWT_ALGORITHM = "HS256"
@@ -95,9 +98,9 @@ class JWTAuth(HttpBearer):
                     ).first()
                     if workspace:
                         request.workspace = workspace  # type: ignore[attr-defined]
-                except (ValueError, TypeError, ValidationError):
-                    # Silently ignore invalid IDs in auth layer
-                    pass
+                except (ValueError, TypeError, ValidationError) as e:
+                    # Silently ignore invalid IDs in auth layer, but log it
+                    logger.debug("Workspace resolution failed in JWTAuth: %s", e)
 
             return user
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
@@ -115,10 +118,14 @@ class APIKeyAuth(HttpBearer):
     def authenticate(self, request: HttpRequest, token: str) -> User | None:
         try:
             hashed_key = APIKey.hash_key(token)
-            api_key = APIKey.objects.select_related("user", "workspace").filter(
-                hashed_key=hashed_key,
-                is_active=True,
-            ).first()
+            api_key = (
+                APIKey.objects.select_related("user", "workspace")
+                .filter(
+                    hashed_key=hashed_key,
+                    is_active=True,
+                )
+                .first()
+            )
 
             if not api_key:
                 return None
