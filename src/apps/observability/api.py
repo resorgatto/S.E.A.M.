@@ -149,7 +149,7 @@ def get_metrics_timeseries(request: HttpRequest, days: int = Query(6, ge=1, le=3
             "executions": stat["executions"],
             "failed": stat["failed"],
         }
-    
+
     # Fill in all days to ensure the chart is continuous
     result = []
     for i in range(days, -1, -1):
